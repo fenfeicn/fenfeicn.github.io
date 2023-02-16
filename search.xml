@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Oracle数据库导入导出</title>
+      <link href="/post/776a71ac.html"/>
+      <url>/post/776a71ac.html</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>登录指定用户</p></blockquote><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#sqlplus 用户名<span class="operator">/</span>密码</span><br><span class="line">sqlplus zslib<span class="operator">/</span>zslib2023</span><br></pre></td></tr></table></figure><blockquote><p>oracle导出数据</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">exp userid=用户名/密码 owner=库名 file=导出位置</span></span><br><span class="line">exp userid=zslib/zslib2023 owner=zslib file=zslib.dmp</span><br></pre></td></tr></table></figure><blockquote><p>oracle导入数据</p></blockquote><p>登录sys用户</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#先切换到oracle用户</span><br><span class="line">su oracle</span><br><span class="line">#刷新环境变量</span><br><span class="line">source <span class="operator">~</span><span class="operator">/</span>.bash_profile</span><br><span class="line">#登录</span><br><span class="line">sqlplus</span><br><span class="line">sys <span class="keyword">as</span> sysdba</span><br></pre></td></tr></table></figure><p><img src="https://images.hckun.cn/image-20230129165944037.png" alt="image-20230129165944037"></p><p>1、创建表空间</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span>space ZSLIB datafile <span class="string">&#x27;ZSLIB.dbf&#x27;</span> size <span class="number">50</span>m autoextend <span class="keyword">on</span>  next <span class="number">50</span>m maxsize <span class="number">2048</span>m  extent management <span class="keyword">local</span>;</span><br><span class="line"><span class="keyword">create</span> temporary tablespace ZSLIB_TEMP  tempfile <span class="string">&#x27;ZSLIB_TEMP.dbf&#x27;</span> size <span class="number">50</span>m  autoextend <span class="keyword">on</span>  next <span class="number">50</span>m maxsize <span class="number">1024</span>m extent management <span class="keyword">local</span>;</span><br></pre></td></tr></table></figure><p>2、创建用户并分配表空间</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> zslib identified <span class="keyword">by</span> zslib2023  <span class="keyword">default</span> tablespace ZSLIB temporary tablespace ZSLIB_TEMP;</span><br></pre></td></tr></table></figure><p>3、给用户授权</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grant</span> <span class="keyword">connect</span>,resource,dba <span class="keyword">to</span> zslib ;</span><br></pre></td></tr></table></figure><p>退出登录</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure><p>4、导入数据</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">imp userid<span class="operator">=</span>用户名<span class="operator">/</span>密码 fromuser<span class="operator">=</span>导出的用户名 touser<span class="operator">=</span>导入的用户名 ignore<span class="operator">=</span>y file<span class="operator">=</span>导入文件位置</span><br><span class="line">imp userid<span class="operator">=</span>zslib<span class="operator">/</span>zslib2023 fromuser<span class="operator">=</span>ry touser<span class="operator">=</span>zslib ignore<span class="operator">=</span>y file<span class="operator">=</span><span class="operator">/</span>opt<span class="operator">/</span>ry.dmp</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Oracle </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>HTML调用电脑摄像头并拍照</title>
       <link href="/post/fbfbeda4.html"/>
       <url>/post/fbfbeda4.html</url>
