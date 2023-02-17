@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Oracle数据库定时备份</title>
+      <link href="/post/192d99e1.html"/>
+      <url>/post/192d99e1.html</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>查看数据库的字符集</p></blockquote><p>数据库的字符集必须和Linux下设置的环境变量一致，不然会有乱码</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from v$nls_parameters where parameter=&#x27;NLS_CHARACTERSET&#x27;;</span><br></pre></td></tr></table></figure><p>查询结果为：NLS_CHARACTERSET ZHS16GBK</p><p><img src="https://images.hckun.cn/image-20230215224825320.png" alt="image-20230215224825320"></p><blockquote><p>用oracle用户登录oracle服务器，创建相关的目录</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /home/oracle/dbbak/data #创建备份数据的目录 </span><br><span class="line">mkdir -p /home/oracle/dbbak/shell #创建备份脚本目录 </span><br><span class="line">mkdir /home/oracle/dbbak/log #创建导出数据日志目录 </span><br></pre></td></tr></table></figure><blockquote><p>在脚本目录下创建脚本文件</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /home/oracle/dbbak/shell/dbbak.sh</span><br></pre></td></tr></table></figure><p>写入以下内容：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">export ORACLE_BASE=/u01/app/oracle</span><br><span class="line">export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/db_1</span><br><span class="line">export ORACLE_SID=orcl</span><br><span class="line">export PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin</span><br><span class="line">export DATA_DIR=/home/oracle/dbbak/data</span><br><span class="line">export LOGS_DIR=/home/oracle/dbbak/log</span><br><span class="line">export DELTIME=`date -d &quot;7 days ago&quot; +%Y%m%d`</span><br><span class="line">export BAKUPTIME=`date +%Y%m%d%H%M%S`</span><br><span class="line">export NLS_LANG=AMERICAN_AMERICA.ZHS16GBK</span><br><span class="line">mkdir -p $DATA_DIR</span><br><span class="line">mkdir -p $LOGS_DIR</span><br><span class="line">echo &quot;Starting bakup...&quot;</span><br><span class="line">echo &quot;Bakup filepath$DATA_DIR/$BAKUPTIME.dmp&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">exp 用户名/密码 owner=用户名 file=dmp文件全路径 <span class="built_in">log</span>=日志文件全路径</span></span><br><span class="line">exp userid=zslib/zslib2023 owner=zslib file=$DATA_DIR/orcl$BAKUPTIME.dmp log=$LOGS_DIR/orcl$BAKUPTIME.log</span><br><span class="line">echo &quot;Delete the file bakup before 30days...filepath: $DATA_DIR/orcl$DELTIME*.dmp &quot;</span><br><span class="line">rm -rf $DATA_DIR/orcl$DELTIME*.dmp</span><br><span class="line">rm -rf $LOGS_DIR/orcl$DELTIME*.log</span><br><span class="line">echo &quot;Delete the file bakup successfully.&quot;</span><br><span class="line">echo &quot;Bakup completed.&quot;</span><br></pre></td></tr></table></figure><blockquote><p>添加脚本执行权限</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 dbbak.sh</span><br></pre></td></tr></table></figure><p>测试是否可以执行：<code>./ dbbak.sh</code></p><p>Export terminated successfully without warnings.表示导出没有问题</p><blockquote><p>添加定时任务</p></blockquote><p>在Oracle用户下</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab –e</span><br></pre></td></tr></table></figure><p>写入如下内容：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">59 23 * * * /home/oracle/dbbak/shell/dbbak.sh   #表示每天的23点59分执行脚本</span><br></pre></td></tr></table></figure><p>重启crond：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service crond restart</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Oracle </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Oracle数据库导入导出</title>
       <link href="/post/776a71ac.html"/>
       <url>/post/776a71ac.html</url>
